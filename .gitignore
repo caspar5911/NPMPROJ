@@ -1,0 +1,35 @@
+# Ignore node_modules for both modules
+node_modules/
+**/node_modules/
+
+# Ignore package tarballs (npm pack output)
+*.tgz
+**/*.tgz
+
+# Ignore build output folders
+dist/
+build/
+**/dist/
+**/build/
+
+# Ignore environment variables files
+.env
+**/.env
+
+# Ignore logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor config folders
+.vscode/
+.idea/
+
+# Ignore package lock files if you want (optional)
+package-lock.json
+yarn.lock
