@@ -1,20 +1,20 @@
 require('dotenv').config();
 
 const express = require('express');
+const multer = require('multer');
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const router = express.Router();
 
+const upload = multer({ dest: 'uploads/' });
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ---------- Configuration ----------
 const PACKAGES_DIR = path.resolve(__dirname, '..', 'packages');
 const { NEXUS_USERNAME, NEXUS_PASSWORD } = process.env;
-
-// ---------- Helpers ----------
 
 function ensurePackagesFolder() {
   if (!fs.existsSync(PACKAGES_DIR)) {
@@ -30,10 +30,10 @@ function createNpmrc(registryUrl) {
 
   const npmrcContent = [
     `registry=${registryUrl}`,
+    `always-auth=true`,
     `//${registryHostPath}/:username=${NEXUS_USERNAME}`,
     `//${registryHostPath}/:_password=${encodedPassword}`,
-    `//${registryHostPath}/:email=you@example.com`,
-    `//${registryHostPath}/:always-auth=true`
+    `//${registryHostPath}/:email=you@example.com`
   ].join('\n');
 
   const npmrcPath = path.join(PACKAGES_DIR, '.npmrc');
@@ -72,9 +72,8 @@ function npmPublishTarball(tarballPath, registryUrl) {
     }
 
     const npmrcPath = createNpmrc(registryUrl);
-
     const normalizedTarballPath = path.normalize(tarballPath);
-    const cmd = `npm publish ${normalizedTarballPath} --registry=${registryUrl} --userconfig="${npmrcPath}" --no-provenance`;
+    const cmd = `npm publish "${normalizedTarballPath}" --registry=${registryUrl} --userconfig="${npmrcPath}" --no-provenance --tag old`;
 
     exec(cmd, (err, stdout, stderr) => {
       deleteNpmrc(); // cleanup
@@ -84,7 +83,70 @@ function npmPublishTarball(tarballPath, registryUrl) {
   });
 }
 
+async function publishAllTarballs(registryUrl) {
+  const folder = PACKAGES_DIR;
+  const allFiles = fs.readdirSync(folder);
+  const tarballs = allFiles.filter(f => f.endsWith('.tgz')).map(f => path.join(folder, f));
+
+  if (tarballs.length === 0) {
+    throw new Error('No .tgz tarballs found to publish.');
+  }
+
+  const results = [];
+
+  for (const tarballPath of tarballs) {
+    try {
+      const output = await npmPublishTarball(tarballPath, registryUrl);
+      results.push({ tarball: path.basename(tarballPath), status: 'success', output });
+    } catch (err) {
+      const errStr = (typeof err === 'string') ? err : (err.message || err.toString());
+      if (errStr.includes('You cannot publish over the previously published versions')) {
+        results.push({
+          tarball: path.basename(tarballPath),
+          status: 'error',
+          error: 'This version already exists in the registry.',
+        });
+        continue;
+      }
+      results.push({
+        tarball: path.basename(tarballPath),
+        status: 'error',
+        error: errStr || 'Unknown error',
+      });
+    }
+  }
+
+  return results;
+}
+
 // ---------- Routes ----------
+
+app.post('/api/publish-all', async (req, res) => {
+  const { registryUrl } = req.body;
+  if (!registryUrl) {
+    return res.status(400).json({ error: 'registryUrl is required' });
+  }
+
+  try {
+    const results = await publishAllTarballs(registryUrl);
+    res.json({ message: 'Publish all completed.', results });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/list-tarballs', (req, res) => {
+  const folder = PACKAGES_DIR;
+  fs.readdir(folder, (err, files) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to read tarballs folder' });
+    }
+    const tarballs = files
+      .filter((f) => f.endsWith('.tgz'))
+      .map((f) => path.join(folder, f));
+    res.json({ tarballs });
+  });
+});
 
 app.post('/api/pack', async (req, res) => {
   const { packageName, version } = req.body;
@@ -110,16 +172,59 @@ app.post('/api/publish', async (req, res) => {
     res.json({ message: 'Publish successful', output });
   } catch (err) {
     console.error('Publish error detail:', err);
-
-    // Handle duplicate version error
     const msg = err.message || err.toString();
     if (msg.includes('You cannot publish over the previously published versions')) {
       return res.status(409).json({ error: 'This version already exists in the registry.' });
     }
-
     res.status(500).json({ error: err.message || 'Unknown error' });
   }
 });
+
+// ✅ FIXED: Properly handle and register this router
+router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (req, res) => {
+  console.log('Received /api/pack-from-packagejson request body:', req.body);
+
+  const packageJson = req.file;
+  if (!packageJson) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  let parsedJson;
+  try {
+    const content = fs.readFileSync(packageJson.path, 'utf-8');
+    parsedJson = JSON.parse(content);
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid JSON file uploaded' });
+  } finally {
+    fs.unlinkSync(packageJson.path);
+  }
+
+  const dependencies = {
+    ...(parsedJson.dependencies || {}),
+    ...(parsedJson.devDependencies || {}),
+  };
+
+  if (Object.keys(dependencies).length === 0) {
+    return res.status(400).json({ error: 'No dependencies or devDependencies found in package.json' });
+  }
+
+  const results = [];
+
+  for (const [pkg, version] of Object.entries(dependencies)) {
+    const spec = typeof version === 'string' && version.startsWith('file:') ? pkg : `${pkg}@${version}`;
+    try {
+      const tarballPath = await npmPack(spec);
+      results.push({ package: pkg, version, status: 'success', tarballPath });
+    } catch (err) {
+      results.push({ package: pkg, version, status: 'error', error: err.toString() });
+    }
+  }
+
+  res.json({ results });
+});
+
+// ✅ IMPORTANT: Register router so above route works
+app.use(router);
 
 // ---------- Start Server ----------
 const PORT = process.env.PORT || 4000;
