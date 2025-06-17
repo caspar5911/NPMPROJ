@@ -1,0 +1,120 @@
+/* src/App.css */
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: linear-gradient(to bottom right, #ffffff, #f4f8fb);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+  font-size: 1.75rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+input,
+select {
+  padding: 0.55rem 0.75rem;
+  font-size: 1rem;
+  margin-top: 0.4rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2684ff;
+  box-shadow: 0 0 6px rgba(38, 132, 255, 0.3);
+  background-color: #fff;
+}
+
+.tooltip {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+button {
+  padding: 0.75rem;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.15s ease;
+}
+
+button:hover,
+button:focus {
+  background-color: #005fa3;
+  transform: scale(1.02);
+  outline: none;
+}
+
+button:disabled {
+  background-color: #9ecbf7;
+  cursor: not-allowed;
+}
+
+.section-divider {
+  border-top: 1px solid #e0e0e0;
+  margin: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 20px;
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.input-group input[type="file"] {
+  flex-grow: 1;
+}
