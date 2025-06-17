@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 const PACKAGES_DIR = path.resolve(__dirname, '..', 'packages');
-const { NEXUS_USERNAME, NEXUS_PASSWORD } = process.env;
+const { NEXUS_USERNAME, NEXUS_PASSWORD, NEXUS_EMAIL } = process.env;
 
 function ensurePackagesFolder() {
   if (!fs.existsSync(PACKAGES_DIR)) {
@@ -33,7 +33,8 @@ function createNpmrc(registryUrl) {
     `always-auth=true`,
     `//${registryHostPath}/:username=${NEXUS_USERNAME}`,
     `//${registryHostPath}/:_password=${encodedPassword}`,
-    `//${registryHostPath}/:email=you@example.com`
+    `//${registryHostPath}/:email=${NEXUS_EMAIL}`,
+    `strict-ssl=false`
   ].join('\n');
 
   const npmrcPath = path.join(PACKAGES_DIR, '.npmrc');
@@ -63,8 +64,8 @@ function npmPack(packageSpec) {
 
 function npmPublishTarball(tarballPath, registryUrl) {
   return new Promise((resolve, reject) => {
-    if (!NEXUS_USERNAME || !NEXUS_PASSWORD) {
-      return reject(new Error('Missing NEXUS_USERNAME or NEXUS_PASSWORD in .env'));
+    if (!NEXUS_USERNAME || !NEXUS_PASSWORD || !NEXUS_EMAIL) {
+      return reject(new Error('Missing NEXUS_USERNAME, NEXUS_PASSWORD or NEXUS_EMAIL in .env'));
     }
 
     if (!fs.existsSync(tarballPath)) {
