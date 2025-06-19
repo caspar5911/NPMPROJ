@@ -32,68 +32,77 @@ function App() {
   }, [fetchAllTarballs]);
 
   return (
-    <div>
-      <Tabs>
-        <TabList style={{ display: 'flex', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
-          <Tab>NPM</Tab>
-          <Tab>NUGET</Tab>
-        </TabList>
-        <TabPanel>
-          <div className="container" style={{
-            justifyContent: 'center',
-            maxWidth: '1500px',
-            width: '100%',
-            margin: '2rem auto',
-            padding: '1rem',
-            gap: '1rem',            // adds horizontal gap between children (better than margin)
-          }}>
-            <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              NPM Package to Nexus Uploader
-            </h1>
-            <div style={{display:'flex'}}>
-              <div className="section" style={sectionStyle}>
-                <h2 style={sectionTitleStyle}>
-                  1. Upload <code>package.json</code>
-                </h2>
-                <UploadPackageJsonForm 
-                  fetchAllTarballs={fetchAllTarballs}
-                  setPackedTarballs={setPackedTarballs}
-                  registryUrls={registryUrls}
-                />
+    <Tabs>
+      <TabList style={{ display: 'flex', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
+        <Tab>NPM</Tab>
+        <Tab>NUGET</Tab>
+      </TabList>
+      <TabPanel>
+        <div className="container" style={{
+          justifyContent: 'center',
+          maxWidth: '1500px',
+          width: '100%',
+          margin: '2rem auto',
+          marginTop: '-0.65rem',
+          padding: '1rem',
+          gap: '1rem',            // adds horizontal gap between children (better than margin)
+        }}>
+          <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            NPM Package to Nexus Uploader
+          </h1>
+          <div style={{display:'flex'}}>
+            <div className="section" style={sectionStyle}>
+              <h2 style={sectionTitleStyle}>
+                1. Upload <code>package.json</code>
+              </h2>
+              <UploadPackageJsonForm 
+                fetchAllTarballs={fetchAllTarballs}
+                setPackedTarballs={setPackedTarballs}
+                registryUrls={registryUrls}
+              />
 
-                <h2 style={sectionTitleStyle}>2. Generate Tarball</h2>
-                <GenerateTarballForm
-                  fetchAllTarballs={fetchAllTarballs}
-                  setPackedTarballs={setPackedTarballs}
-                  setSelectedTarball={setSelectedTarball}
-                  registryUrls={registryUrls}
-                />
-                <RegistryInput
-                  registryUrls={registryUrls}
-                  setRegistryUrls={setRegistryUrls}
-                />
-              </div>
+              <h2 style={sectionTitleStyle}>2. Generate Tarball</h2>
+              <GenerateTarballForm
+                fetchAllTarballs={fetchAllTarballs}
+                setPackedTarballs={setPackedTarballs}
+                setSelectedTarball={setSelectedTarball}
+                registryUrls={registryUrls}
+              />
+              <RegistryInput
+                registryUrls={registryUrls}
+                setRegistryUrls={setRegistryUrls}
+              />
+            </div>
 
-              <div className="section" style={sectionStyle}>
-                <h2 style={sectionTitleStyle}>3. Publish Tarball</h2>
-                <TarballPublisher
-                  allTarballs={allTarballs}
-                  selectedTarball={selectedTarball}
-                  setSelectedTarball={setSelectedTarball}
-                />
-                <div className="section" style={{ marginTop: '2rem' }}>
-                  <DisplayPackedTarballsMessage packedTarballs={packedTarballs} />
-                </div>
+            <div className="section" style={sectionStyle}>
+              <h2 style={sectionTitleStyle}>3. Publish Tarball</h2>
+              <TarballPublisher
+                allTarballs={allTarballs}
+                selectedTarball={selectedTarball}
+                setSelectedTarball={setSelectedTarball}
+              />
+              <div className="section" style={{ marginTop: '2rem' }}>
+                <DisplayPackedTarballsMessage packedTarballs={packedTarballs} />
               </div>
             </div>
           </div>
-        </TabPanel>
-        <TabPanel>
-          {/* NuGet form */}
-        </TabPanel>
-        </Tabs>
-      
-    </div>
+        </div>
+      </TabPanel>
+      <TabPanel>
+        {/* NuGet form */}
+        <div className="container" style={{
+          justifyContent: 'center',
+          maxWidth: '1500px',
+          width: '100%',
+          margin: '2rem auto',
+          marginTop: '-0.65rem',
+          padding: '1rem',
+          gap: '1rem',            // adds horizontal gap between children (better than margin)
+        }}>
+
+        </div>
+      </TabPanel>
+    </Tabs>
   );
 }
 
