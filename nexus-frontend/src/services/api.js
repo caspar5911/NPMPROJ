@@ -11,13 +11,13 @@ export async function fetchPackageVersions(packageName) {
   return Object.keys(data.versions).reverse();
 }
 
-export async function packNpmPackage(packageName, version) {
+export async function packNpmPackage(packageName, version, registryUrls) {
   if (!packageName || !version) throw new Error('Package name and version are required');
 
   const res = await fetch('http://localhost:4000/api/pack', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ packageName, version }),
+    body: JSON.stringify({ packageName, version, registryUrls }),
   });
 
   const data = await res.json();
@@ -60,9 +60,10 @@ export async function publishAllTarballs(registryUrl) {
 
 // api.js
 
-export async function uploadPackageJson(file) {
+export async function uploadPackageJson(file, registryUrls) {
   const formData = new FormData();
   formData.append('packageJson', file);
+  formData.append('registryUrls', JSON.stringify(registryUrls));
 
   const res = await fetch('http://localhost:4000/api/pack-from-packagejson', {
     method: 'POST',

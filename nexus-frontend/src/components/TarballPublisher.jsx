@@ -74,7 +74,7 @@ export default function TarballPublisher({ allTarballs, selectedTarball, setSele
   };
 
   return (
-    <div style={{ outline: '1px solid #ccc', padding: 16 }}>
+    <div style={{ outline: '1px solid #ccc', padding: 16, marginTop: 24, marginBottom:10 }}>
       <section style={{ marginTop: 24 }}>
         <h2>📦 Upload .tgz Files to Custom NPM Registry</h2>
         <p>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fetchPackageVersions, packNpmPackage } from '../services/api';
 
-function GenerateTarballForm({ setPackedTarballs, fetchAllTarballs, setSelectedTarball }) {
+function GenerateTarballForm({ setPackedTarballs, fetchAllTarballs, setSelectedTarball, registryUrls }) {
   const [genStatus, setGenStatus] = useState('');
   const [form, setForm] = useState({ repoUrl: '', packageName: '', version: '' });
   const [availableVersions, setAvailableVersions] = useState([]);
@@ -47,7 +47,7 @@ function GenerateTarballForm({ setPackedTarballs, fetchAllTarballs, setSelectedT
     }
     setGenStatus('Packing package...');
     try {
-      const tarballPath = await packNpmPackage(form.packageName.trim(), form.version.trim());
+      const tarballPath = await packNpmPackage(form.packageName.trim(), form.version.trim(), registryUrls);
       setPackedTarballs((prev) => (!prev.includes(tarballPath) ? [...prev, tarballPath] : prev));
       await fetchAllTarballs();
       setGenStatus(`Package packed successfully: ${tarballPath}`);

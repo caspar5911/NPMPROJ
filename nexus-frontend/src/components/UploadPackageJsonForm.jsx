@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { uploadPackageJson } from '../services/api';
 
-function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs }) {
+function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs, registryUrls }) {
   const [selectedPackageJsonFile, setSelectedPackageJsonFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState('');
@@ -22,7 +22,7 @@ function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs }) {
     setStatus('Uploading package.json and installing dependencies...');
 
     try {
-      const data = await uploadPackageJson(selectedPackageJsonFile);
+      const data = await uploadPackageJson(selectedPackageJsonFile, registryUrls);
 
       // Append newly packed tarballs to existing state
       const newTarballs = data.results
@@ -41,16 +41,16 @@ function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs }) {
       setStatus(data.message || 'Dependencies installed and packages packed successfully.');
       // setSelectedPackageJsonFile(null);
     } catch (err) {
-      setStatus('Upload error: ' + err.message);
+      setStatus('Error: ' + err.message);
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div style={{ outline: '1px solid #ccc', padding: 16, marginTop: 24 }}>
+    <div style={{ outline: '1px solid #ccc', padding: 16, marginTop: 24, marginBottom:10 }}>
       <h2>📦 Generate Tarballs via package.json</h2>
-      <div style={{ marginBottom: 16 }}>
+      <div>
         <label>
           Upload package.json
           <div className="input-group">
@@ -72,7 +72,17 @@ function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs }) {
             </button>
           </div>
         </label>
-        {status && <p style={{ marginTop: 8, color: 'blue' }}>{status}</p>}
+        {status && <div
+          style={{
+            fontWeight: 'bold',
+            whiteSpace: 'pre-wrap',
+            minHeight: '1.5em',
+            color: 'blue',
+            marginTop: 12,
+          }}
+        >
+          {status}
+        </div>}
       </div>
     </div>
   );

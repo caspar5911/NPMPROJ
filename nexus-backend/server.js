@@ -49,10 +49,12 @@ function deleteNpmrc() {
   }
 }
 
-function npmPack(packageSpec) {
+function npmPack(packageSpec, registryUrl) {
+  console.log(`Packing package: ${packageSpec} for registry: ${registryUrl}`);
   return new Promise((resolve, reject) => {
     const cwd = ensurePackagesFolder();
-    const cmd = `npm pack ${packageSpec} --registry=https://registry.npmjs.org/`;
+    const cmd = `npm pack ${packageSpec} --registry=${registryUrl}`;
+    console.log(registryUrl)
 
     exec(cmd, { cwd }, (err, stdout, stderr) => {
       if (err) return reject(stderr || err.message);
@@ -150,15 +152,22 @@ app.get('/api/list-tarballs', (req, res) => {
 });
 
 app.post('/api/pack', async (req, res) => {
-  const { packageName, version } = req.body;
+  const { packageName, version, registryUrls } = req.body;
   if (!packageName) return res.status(400).json({ error: 'Package name is required' });
+  if (registryUrls.length == 0) return res.status(400).json({ error: 'Registry Url is required' });
 
-  try {
-    const spec = version ? `${packageName}@${version}` : packageName;
-    const tarballPath = await npmPack(spec);
-    res.json({ message: 'Pack successful', tarballPath });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  const spec = version ? `${packageName}@${version}` : packageName;
+  let count = 0;
+  for (const registry of registryUrls) {
+    try {
+      const tarballPath = await npmPack(spec, registry);
+      res.json({ message: 'Pack successful', tarballPath });
+      return; // ✅ Prevent double response
+    } catch (err) {
+      if(count == registryUrls.length) res.status(500).json({ error: err.message || 'Unknown error' });
+      count++;
+      continue;
+    }
   }
 });
 
@@ -209,16 +218,31 @@ router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (r
     return res.status(400).json({ error: 'No dependencies or devDependencies found in package.json' });
   }
 
+  const registryUrls = req.body.registryUrls ? JSON.parse(req.body.registryUrls) : [];
+
+  if(registryUrls.length === 0) {
+    return res.status(400).json({ error: 'Registry Url is required' });
+  }
+
   const results = [];
 
   for (const [pkg, version] of Object.entries(dependencies)) {
     const spec = typeof version === 'string' && version.startsWith('file:') ? pkg : `${pkg}@${version}`;
-    try {
-      const tarballPath = await npmPack(spec);
-      results.push({ package: pkg, version, status: 'success', tarballPath });
-    } catch (err) {
-      results.push({ package: pkg, version, status: 'error', error: err.toString() });
+    let lastErr = "";
+    let success = false;
+    for (const registry of registryUrls) {
+      try {
+        const tarballPath = await npmPack(spec, registry);
+        console.log(`Packed ${pkg} version ${version} to ${tarballPath} using registry ${registry}`);
+        results.push({ package: pkg, version, status: 'success', tarballPath });
+        success = true;
+        break; // Exit loop on success
+      } catch (err) {
+        lastErr = err;
+        continue;
+      }
     }
+    if(!success) results.push({ package: pkg, version, status: 'error', error: lastErr.toString() });
   }
 
   res.json({ results });

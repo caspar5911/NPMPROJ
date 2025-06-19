@@ -118,3 +118,39 @@ button:disabled {
 .input-group input[type="file"] {
   flex-grow: 1;
 }
+
+/* Registry input list (for consistency) */
+.registry-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+}
+
+.registry-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 0.5rem 0.75rem; */
+  /* border: 1px solid #ccc; */
+  /* border-radius: 6px; */
+  /* margin-bottom: 0.5rem; */
+  /* background-color: #fff; */
+  font-size: 1rem;
+  /* word-break: break-word; */
+}
+
+.registry-list button {
+  background: none;
+  border: none;
+  color: #d9534f;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.registry-list button:hover {
+  color: #b52b27;
+  text-decoration: underline;
+}
+
+/* Use existing .input-group styles from your CSS */
