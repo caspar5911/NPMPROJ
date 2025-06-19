@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fetchPackageVersions, packNpmPackage } from '../services/api';
+import { fetchPackageVersions, packNpmPackage } from '../../services/api';
 
 function GenerateTarballForm({ setPackedTarballs, fetchAllTarballs, setSelectedTarball, registryUrls }) {
   const [genStatus, setGenStatus] = useState('');

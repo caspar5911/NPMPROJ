@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { uploadPackageJson } from '../services/api';
+import { uploadPackageJson } from '../../services/api';
 
 function UploadPackageJsonForm({ fetchAllTarballs, setPackedTarballs, registryUrls }) {
   const [selectedPackageJsonFile, setSelectedPackageJsonFile] = useState(null);

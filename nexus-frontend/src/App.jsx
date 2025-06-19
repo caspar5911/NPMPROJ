@@ -3,11 +3,11 @@ import {Tabs, TabList, Tab, TabPanel} from 'react-tabs';
 import './styles/App.css';
 import 'react-tabs/style/react-tabs.css';
 
-import UploadPackageJsonForm from './components/UploadPackageJsonForm';
-import GenerateTarballForm from './components/GenerateTarballForm';
-import TarballPublisher from './components/TarballPublisher';
-import DisplayPackedTarballsMessage from './components/DisplayPackedTarballsMessage';
-import RegistryInput from './components/RegistryInput';
+import UploadPackageJsonForm from './components/npm/UploadPackageJsonForm';
+import GenerateTarballForm from './components/npm/GenerateTarballForm';
+import TarballPublisher from './components/npm/TarballPublisher';
+import DisplayPackedTarballsMessage from './components/npm/DisplayPackedTarballsMessage';
+import RegistryInput from './components/npm/RegistryInput';
 import { fetchAllTarballs as fetchTarballsAPI } from './services/api';
 
 function App() {

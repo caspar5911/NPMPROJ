@@ -1,5 +1,5 @@
 // src/api.js
-
+``` ----------------------------------NPM Package Management API----------------------------------- ```
 export async function fetchPackageVersions(packageName) {
   if (!packageName) throw new Error('Package name is required');
 
@@ -87,3 +87,5 @@ export async function uploadPackageJson(file, registryUrls) {
     throw new Error('Server returned non-JSON response');
   }
 }
+
+``` ----------------------------------NPM Package Management API----------------------------------- ```

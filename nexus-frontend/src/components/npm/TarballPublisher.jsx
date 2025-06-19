@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { publishTarball, publishAllTarballs } from '../services/api';
+import { publishTarball, publishAllTarballs } from '../../services/api';
 
 export default function TarballPublisher({ allTarballs, selectedTarball, setSelectedTarball }) {
   const [status, setStatus] = useState('');
