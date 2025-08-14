@@ -35,7 +35,7 @@ function App() {
     <Tabs>
       <TabList style={{ display: 'flex', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
         <Tab>NPM</Tab>
-        <Tab>NUGET</Tab>
+        {/*<Tab>NUGET</Tab>*/}
       </TabList>
       <TabPanel>
         <div className="container" style={{

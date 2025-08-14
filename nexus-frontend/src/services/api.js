@@ -26,7 +26,7 @@ export async function packNpmPackage(packageName, version, registryUrls) {
     throw new Error(data.error || 'Error packing package');
   }
 
-  return data.tarballPath;
+  return data.tarballs;
 }
 
 export async function fetchAllTarballs() {
@@ -76,8 +76,8 @@ export async function uploadPackageJson(file, registryUrls) {
     let errorMsg = text;
     try {
       const data = JSON.parse(text);
-      errorMsg = data.error || text;
-    } catch {}
+        errorMsg = data.error || text;
+    } catch(e) { console.log("Failed to parse:", e); }
     throw new Error(errorMsg);
   }
 

@@ -47,10 +47,10 @@ function GenerateTarballForm({ setPackedTarballs, fetchAllTarballs, setSelectedT
     }
     setGenStatus('Packing package...');
     try {
-      const tarballPath = await packNpmPackage(form.packageName.trim(), form.version.trim(), registryUrls);
-      setPackedTarballs((prev) => (!prev.includes(tarballPath) ? [...prev, tarballPath] : prev));
+        const tarballs = await packNpmPackage(form.packageName.trim(), form.version.trim(), registryUrls);
+        setPackedTarballs(tarballs);
       await fetchAllTarballs();
-      setGenStatus(`Package packed successfully: ${tarballPath}`);
+        setGenStatus(`Package packed successfully`);
     } catch (err) {
       setGenStatus('Error: ' + err.message);
     }

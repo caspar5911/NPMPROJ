@@ -9,7 +9,7 @@ export default function DisplayPackedTarballsMessage({ packedTarballs }) {
 
   return (
     <div style={{ fontWeight: 'bold', whiteSpace: 'pre-wrap', minHeight: '1.5em' }}>
-      {packedTarballs.length} tarball(s) packed this session:
+      {packedTarballs.length} tarball(s) packed:
       <ul>
         {packedTarballs.map((path, index) => (
           <li key={index}>{path}</li>
