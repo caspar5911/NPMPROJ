@@ -1,3 +1,9 @@
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
+function buildApiUrl(path) {
+  return `${API_BASE_URL}${path}`;
+}
+
 // src/api.js
 //----------------------------------NPM Package Management API-----------------------------------
 export async function fetchPackageVersions(packageName) {
@@ -14,7 +20,7 @@ export async function fetchPackageVersions(packageName) {
 export async function packNpmPackage(packageName, version, registryUrls) {
   if (!packageName || !version) throw new Error('Package name and version are required');
 
-  const res = await fetch('http://localhost:4000/api/pack', {
+  const res = await fetch(buildApiUrl('/api/pack'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ packageName, version, registryUrls }),
@@ -30,14 +36,14 @@ export async function packNpmPackage(packageName, version, registryUrls) {
 }
 
 export async function fetchAllTarballs() {
-  const res = await fetch('http://localhost:4000/api/list-tarballs');
+  const res = await fetch(buildApiUrl('/api/list-tarballs'));
   if (!res.ok) throw new Error('Failed to fetch tarballs');
   const data = await res.json();
   return data.tarballs || [];
 }
 
 export async function publishTarball(tarballPath, registryUrl) {
-  const res = await fetch('http://localhost:4000/api/publish', {
+  const res = await fetch(buildApiUrl('/api/publish'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tarballPath, registryUrl }),
@@ -48,7 +54,7 @@ export async function publishTarball(tarballPath, registryUrl) {
 }
 
 export async function publishAllTarballs(registryUrl) {
-  const res = await fetch('http://localhost:4000/api/publish-all', {
+  const res = await fetch(buildApiUrl('/api/publish-all'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ registryUrl }),
@@ -65,7 +71,7 @@ export async function uploadPackageJson(file, registryUrls) {
   formData.append('packageJson', file);
   formData.append('registryUrls', JSON.stringify(registryUrls));
 
-  const res = await fetch('http://localhost:4000/api/pack-from-packagejson', {
+  const res = await fetch(buildApiUrl('/api/pack-from-packagejson'), {
     method: 'POST',
     body: formData,
   });

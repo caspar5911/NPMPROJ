@@ -22,6 +22,10 @@ const router = express.Router();
 app.use(cors());
 app.use(express.json());
 
+app.get('/health', (_req, res) => {
+    res.json({ status: 'ok' });
+});
+
 //-----------------------------------NPM Package Management------------------------------------
 app.post('/api/publish-all', async (req, res) => {
     const { registryUrl } = req.body;
@@ -144,7 +148,7 @@ router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (r
         }
     }
     // Map full paths to filenames
-    const tarballNames = tarballPaths.map(p => path.basename(p));
+    const tarballNames = (tarballPaths || []).map(p => path.basename(p));
     res.json({ results, tarballs: tarballNames });
 });
 
