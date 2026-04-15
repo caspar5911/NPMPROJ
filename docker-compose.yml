@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./nexus-backend
+    container_name: nexus-backend
+    env_file:
+      - ./nexus-backend/.env
+    environment:
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    volumes:
+      - backend_pkg_temp:/app/pkg_temp
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./nexus-frontend
+      args:
+        VITE_API_BASE_URL: ""
+    container_name: nexus-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  backend_pkg_temp:

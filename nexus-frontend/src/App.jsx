@@ -20,7 +20,8 @@ function App() {
   const fetchAllTarballs = useCallback(async () => {
     try {
       const tarballs = await fetchTarballsAPI();
-      setAllTarballs(tarballs);
+        setAllTarballs(tarballs);
+        console.log("help");
     } catch (err) {
       console.error('Error fetching tarballs:', err);
       setAllTarballs([]);
@@ -88,20 +89,20 @@ function App() {
           </div>
         </div>
       </TabPanel>
-      <TabPanel>
-        {/* NuGet form */}
-        <div className="container" style={{
-          justifyContent: 'center',
-          maxWidth: '1500px',
-          width: '100%',
-          margin: '2rem auto',
-          marginTop: '-0.65rem',
-          padding: '1rem',
-          gap: '1rem',            // adds horizontal gap between children (better than margin)
-        }}>
+      {/*<TabPanel>*/}
+      {/*  */}{/* NuGet form */}
+      {/*  <div className="container" style={{*/}
+      {/*    justifyContent: 'center',*/}
+      {/*    maxWidth: '1500px',*/}
+      {/*    width: '100%',*/}
+      {/*    margin: '2rem auto',*/}
+      {/*    marginTop: '-0.65rem',*/}
+      {/*    padding: '1rem',*/}
+      {/*    gap: '1rem',            // adds horizontal gap between children (better than margin)*/}
+      {/*  }}>*/}
 
-        </div>
-      </TabPanel>
+      {/*  </div>*/}
+      {/*</TabPanel>*/}
     </Tabs>
   );
 }

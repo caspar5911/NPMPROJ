@@ -169,11 +169,13 @@ async function publishAllTarballs(registryUrl, retries = 3) {
 
     const publishWithRetry = async (tarball, attempt = 1) => {
         try {
+            console.log(`publishing ${path.basename(tarball)}...`);
             const output = await npmPublishTarball(tarball, registryUrl);
             return { tarball: path.basename(tarball), status: 'success', output };
         } catch (err) {
             if (attempt < retries) {
                 console.log(`Retrying ${path.basename(tarball)} (attempt ${attempt + 1})...`);
+                console.log(err);
                 return publishWithRetry(tarball, attempt + 1);
             }
             const msg = (err.message || err.toString());
