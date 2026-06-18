@@ -14,8 +14,10 @@ const {
     moveAllFiles
 } = require('./utils/npmUtils');
 
+const uploadsDir = path.resolve(__dirname, 'pkg_temp', 'uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
 
-const upload = multer({ dest: 'pkg_temp/uploads/' });
+const upload = multer({ dest: uploadsDir });
 const app = express();
 const router = express.Router();
 
@@ -121,7 +123,7 @@ router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (r
     }
 
     const results = [];
-    let tarballPaths;
+    const packedTarballs = new Set();
 
     const currentFolder = ensurePackagesFolder();
     const oldFolder = ensureOldPackagesFolder();
@@ -133,7 +135,8 @@ router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (r
         let success = false;
         for (const registry of registryUrls) {
             try {
-                tarballPaths = await npmPack(spec, registry);
+                const tarballPaths = await npmPack(spec, registry);
+                tarballPaths.forEach((tarballPath) => packedTarballs.add(tarballPath));
                 results.push({ package: pkg, version, status: 'success' });
                 success = true;
                 break;
@@ -148,7 +151,7 @@ router.post('/api/pack-from-packagejson', upload.single('packageJson'), async (r
         }
     }
     // Map full paths to filenames
-    const tarballNames = (tarballPaths || []).map(p => path.basename(p));
+    const tarballNames = Array.from(packedTarballs).map(p => path.basename(p));
     res.json({ results, tarballs: tarballNames });
 });
 
